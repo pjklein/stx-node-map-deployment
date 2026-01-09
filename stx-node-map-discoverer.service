@@ -1,0 +1,31 @@
+[Unit]
+Description=STX Node Map Discoverer Service
+After=network.target
+
+[Service]
+Type=simple
+User=stx
+Group=stx
+WorkingDirectory=/opt/stx-node-map/backend
+Environment="PATH=/opt/stx-node-map/backend/.venv/bin"
+Environment="NETWORK=mainnet"
+Environment="PYTHONUNBUFFERED=1"
+
+# Run the discoverer
+ExecStart=/opt/stx-node-map/backend/.venv/bin/python run.py discoverer
+
+# Restart policy
+Restart=always
+RestartSec=30
+StartLimitInterval=0
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=append:/var/log/stx-node-map/discoverer.log
+StandardError=append:/var/log/stx-node-map/discoverer-error.log
+
+[Install]
+WantedBy=multi-user.target

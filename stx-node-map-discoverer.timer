@@ -1,0 +1,14 @@
+[Unit]
+Description=STX Node Map Discoverer Timer
+Requires=stx-node-map-discoverer.service
+
+[Timer]
+# Run every hour
+OnCalendar=hourly
+# Run on boot after 5 minutes
+OnBootSec=5min
+# If the service missed a run, run it immediately
+Persistent=true
+
+[Install]
+WantedBy=timers.target

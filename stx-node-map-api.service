@@ -1,0 +1,39 @@
+[Unit]
+Description=STX Node Map API Service
+After=network.target
+
+[Service]
+Type=notify
+User=stx
+Group=stx
+WorkingDirectory=/opt/stx-node-map/backend
+Environment="PATH=/opt/stx-node-map/backend/.venv/bin"
+Environment="NETWORK=mainnet"
+Environment="PYTHONUNBUFFERED=1"
+
+# Run the API with gunicorn
+ExecStart=/opt/stx-node-map/backend/.venv/bin/gunicorn \
+    --workers 4 \
+    --worker-class sync \
+    --bind 127.0.0.1:8089 \
+    --timeout 120 \
+    --access-logfile /var/log/stx-node-map/api-access.log \
+    --error-logfile /var/log/stx-node-map/api-error.log \
+    --log-level info \
+    --capture-output \
+    'stx_node_map.api.app:app'
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=0
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Resource limits
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
