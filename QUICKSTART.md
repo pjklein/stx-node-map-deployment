@@ -12,6 +12,7 @@ nano hetzner-config.env
 Required settings:
 - `HETZNER_API_TOKEN` - Get from: https://console.hetzner.cloud/ → Security → API Tokens
 - `SSH_KEY_NAME` - Upload your SSH key first at: Security → SSH Keys
+- `DOMAIN_NAME` - Your domain (e.g., stacks-node-map.evanidanim.com)
 
 ### 2. Create the Server (Python - Recommended)
 ```bash
@@ -41,9 +42,29 @@ cd /root/deployment
 ./02-deploy.sh
 ```
 
-### 4. Access Your Application
-- Web: `http://<SERVER_IP>`
-- API: `http://<SERVER_IP>/api/nodes`
+### 4. Configure DNS
+Point your domain's A record to the server IP:
+```
+stacks-node-map.evanidanim.com → <SERVER_IP>
+```
+
+Wait 5-30 minutes for DNS propagation.
+
+### 5. Setup SSL Certificate
+```bash
+# From the deployment directory on your local machine (or the server):
+sudo ./03-setup-ssl.sh
+```
+
+This will:
+- ✅ Get a Let's Encrypt wildcard certificate
+- ✅ Configure Nginx to use it
+- ✅ Setup auto-renewal
+- ✅ Redirect HTTP → HTTPS
+
+### 6. Access Your Application
+- Web: `https://stacks-node-map.evanidanim.com`
+- API: `https://stacks-node-map.evanidanim.com/api/nodes`
 
 ## 📋 What Gets Created
 
@@ -86,13 +107,19 @@ cd /root/deployment
 sudo ./02-deploy.sh
 ```
 
-## 🔒 Add SSL Certificate (Optional)
+### SSL Certificate Management
 ```bash
-# Point your domain to the server IP first
-# Then run:
-certbot --nginx -d your-domain.com
+# View all certificates
+sudo certbot certificates
 
-# Auto-renewal is configured automatically
+# Renew all certificates now (usually automatic)
+sudo certbot renew
+
+# Check renewal status
+sudo certbot renew --dry-run
+
+# View certificate details
+openssl x509 -in /etc/letsencrypt/live/DOMAIN/fullchain.pem -text -noout
 ```
 
 ## 💰 Cost

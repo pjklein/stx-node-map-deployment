@@ -4,7 +4,19 @@
 
 set -e  # Exit on error
 
-REPO_URL="https://github.com/YOUR_USERNAME/stx-node-map-monorepo.git"  # Update this!
+# Get script directory and load config
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_FILE="$SCRIPT_DIR/hetzner-config.env"
+
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+fi
+
+# Set defaults if not configured
+GITHUB_USERNAME="${GITHUB_USERNAME:-your-username}"
+REPO_NAME="${REPO_NAME:-stx-node-map-monorepo}"
+REPO_URL="https://github.com/$GITHUB_USERNAME/$REPO_NAME.git"
+
 APP_DIR="/opt/stx-node-map"
 FRONTEND_BUILD_DIR="$APP_DIR/frontend/build"
 WEB_DIR="/var/www/stx-node-map"
