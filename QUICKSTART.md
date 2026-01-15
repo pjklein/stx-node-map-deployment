@@ -10,7 +10,7 @@ nano hetzner-config.env
 ```
 
 Required settings:
-- `HETZNER_API_TOKEN` - Get from: https://console.hetzner.cloud/ → Security → API Tokens
+- `HETZNER_API_TOKEN` - Get from: https://console.hetzner.com/ → Security → API Tokens
 - `SSH_KEY_NAME` - Upload your SSH key first at: Security → SSH Keys
 - `DOMAIN_NAME` - Your domain (e.g., your-domain.com)
 

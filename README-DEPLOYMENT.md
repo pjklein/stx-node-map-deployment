@@ -4,7 +4,7 @@ This guide covers deploying the STX Node Map application to a Hetzner Cloud serv
 
 ## Prerequisites
 
-1. **Hetzner Cloud Account**: Sign up at [https://console.hetzner.cloud/](https://console.hetzner.cloud/)
+1. **Hetzner Cloud Account**: Sign up at [https://console.hetzner.com/](https://console.hetzner.com/)
 2. **API Token**: Generate from Hetzner Console → Project → Security → API Tokens
 3. **SSH Key**: Upload your SSH public key to Hetzner Console → Project → Security → SSH Keys
 

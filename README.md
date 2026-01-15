@@ -48,7 +48,7 @@ Automated deployment scripts and configuration for deploying the STX Node Map ap
 
 ## 🔑 Prerequisites
 
-1. **Hetzner Cloud Account**: https://console.hetzner.cloud/
+1. **Hetzner Cloud Account**: https://console.hetzner.com/
 2. **API Token**: Console → Project → Security → API Tokens
 3. **SSH Key**: Upload at Console → Project → Security → SSH Keys
 
