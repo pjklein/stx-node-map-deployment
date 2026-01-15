@@ -57,7 +57,18 @@ echo "Configuration:"
 echo "  Domain:          $DOMAIN"
 echo "  Wildcard Domain: $WILDCARD_DOMAIN"
 echo "  Email:           $EMAIL"
+if [ -n "$SERVER_IP" ]; then
+    echo "  Server IP:       $SERVER_IP"
+fi
 echo ""
+
+# Important note for .app domains
+if [[ "$DOMAIN" == *.app ]]; then
+    echo -e "${BLUE}NOTE: .app domain detected${NC}"
+    echo ".app domains require HTTPS (HSTS preloaded)"
+    echo "DNS will be updated BEFORE obtaining certificate"
+    echo ""
+fi
 
 # Check if certbot is installed
 if ! command -v certbot &> /dev/null; then
@@ -78,22 +89,44 @@ EOF
     echo -e "${GREEN}✓ Cloudflare credentials configured${NC}"
 fi
 
-# Check if cert already exists
-CERT_DIR="/etc/letsencrypt/live/$DOMAIN"
-if [ -d "$CERT_DIR" ]; then
-    echo -e "${YELLOW}Certificate already exists for $DOMAIN${NC}"
-    read -p "Do you want to renew it? (yes/no): " -r
-    if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
-        echo "Skipping certificate renewal."
-        exit 0
-    fi
-fi
-
-echo ""
-echo "Step 1: Obtaining Let's Encrypt wildcard certificate via Cloudflare DNS..."
+# Update Cloudflare DNS FIRST (especially important for .app domains)
+if [ -n "$SERVER_IP" ]; then
+    echo ""
+    echo "Step 1: Updating Cloudflare DNS to point to server..."
+    
+    # Get zone ID from Cloudflare
+    ZONE_RESPONSE=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=$DOMAIN" \
+        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+        -H "Content-Type: application/json")
+    
+    ZONE_ID=$(echo "$ZONE_RESPONSE" | jq -r '.result[0].id // empty')
+    
+    if [ -z$STEP_NUM: Obtaining Let's Encrypt wildcard certificate via Cloudflare DNS..."
 echo ""
 
 # Get certificate using Cloudflare DNS challenge
+certbot certonly \
+    --agree-tos \
+    --dns-cloudflare \
+    --dns-cloudflare-credentials "$CLOUDFLARE_INI" \
+    --dns-cloudflare-propagation-seconds 30 \
+    -d "$DOMAIN" \
+    -d "$WILDCARD_DOMAIN" \
+    --email "$EMAIL" \
+    --non-interactive
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}ERROR: Failed to obtain certificate${NC}"
+    exit 1
+fi
+
+echo ""
+echo -e "${GREEN}✓ Certificate obtained successfully!${NC}"
+echo ""
+
+# Step 3: Configure Nginx
+STEP_NUM=$((STEP_NUM + 1))
+echo "Step $STEP_NUMicate using Cloudflare DNS challenge
 certbot certonly \
     --agree-tos \
     --dns-cloudflare \
@@ -268,7 +301,8 @@ sed -i "s|server_name _;|server_name $DOMAIN $WILDCARD_DOMAIN;|g" "$NGINX_CONF"
 if [ ! -L /etc/nginx/sites-enabled/stx-node-map ]; then
     ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/stx-node-map
 fi
-
+STEP_NUM=$((STEP_NUM + 1))
+echo "Step $STEP_NUM
 # Remove default site if it exists
 rm -f /etc/nginx/sites-enabled/default
 
@@ -362,34 +396,41 @@ echo ""
 # Check if certbot is installed
 if ! command -v certbot &> /dev/null; then
     echo "Installing certbot..."
-    apt-get update
-    apt-get install -y certbot python3-certbot-nginx
-fi
-
-# Check if nginx is installed and running
-if ! systemctl is-active --quiet nginx; then
-    echo -e "${YELLOW}WARNING: Nginx is not running. Starting Nginx...${NC}"
-    systemctl start nginx
-fi
-
-# Check if cert already exists
-CERT_DIR="/etc/letsencrypt/live/$DOMAIN"
-if [ -d "$CERT_DIR" ]; then
-    echo -e "${YELLOW}Certificate already exists for $DOMAIN${NC}"
-    read -p "Do you want to renew it? (yes/no): " -r
-    if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
-        echo "Skipping certificate renewal."
-        exit 0
-    fi
-fi
-
+STEP_NUM=$((STEP_NUM + 1))
 echo ""
-echo "Step 1: Obtaining Let's Encrypt wildcard certificate..."
+echo "=========================================="
+echo -e "${GREEN}SSL Setup Complete!${NC}"
+echo "=========================================="
 echo ""
-echo -e "${BLUE}NOTE: You will need to add DNS TXT records to verify domain ownership.${NC}"
-echo "Follow the prompts below and add the DNS records when prompted."
+echo "Certificate Details:"
+echo "  Domain:         $DOMAIN"
+echo "  Wildcard:       $WILDCARD_DOMAIN"
+echo "  Location:       $CERT_DIR"
+echo "  Expires:        $(date -d '+90 days' +'%Y-%m-%d')"
 echo ""
-
+echo "Cloudflare Integration:"
+echo "  ✓ DNS validation automated"
+echo "  ✓ Auto-renewal configured"
+if [ -n "$SERVER_IP" ]; then
+    echo "  ✓ DNS A record pointing to: $SERVER_IP"
+fi
+if [[ "$DOMAIN" == *.app ]]; then
+    echo ""
+    echo -e "${GREEN}✓ .app domain properly configured with HTTPS${NC}"
+fi
+echo ""
+echo "Auto-renewal:"
+echo "  Systemd timer is configured to auto-renew certificates"
+echo "  Check renewal status: certbot renew --dry-run"
+echo ""
+echo "Your site is now live with SSL!"
+echo "  https://$DOMAIN"
+if [[ "$DOMAIN" != *\*  ]]; then
+    echo "  https://www.$DOMAIN (wildcard)"
+fi
+echo ""
+echo "Verification:"
+echo "  curl -I
 # Get certificate with DNS challenge (required for wildcard)
 certbot certonly \
     --agree-tos \

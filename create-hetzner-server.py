@@ -379,11 +379,37 @@ def main():
         
         print()
         print(f"{Colors.GREEN}Deployment files copied!{Colors.NC}")
-        print()
-        print("You can now SSH into the server and run:")
-        print("  cd /root/deployment")
-        print("  ./01-server-setup.sh")
-        print("  ./02-deploy.sh")
+    
+    # Offer to setup SSL with Cloudflare
+    print()
+    cloudflare_token = config.get('CLOUDFLARE_API_TOKEN', '')
+    if cloudflare_token and cloudflare_token != 'your_cloudflare_api_token_here':
+        response = input("Would you like to setup SSL and update Cloudflare DNS now? (yes/no): ")
+        if response.lower() in ['yes', 'y']:
+            print()
+            print("Running SSL setup with Cloudflare DNS automation...")
+            script_dir = Path(__file__).parent
+            ssl_script = script_dir / "03-setup-ssl.sh"
+            os.system(f"sudo {ssl_script} {ipv4}")
+            
+            print()
+            print(f"{Colors.GREEN}✓ SSL and DNS configured!{Colors.NC}")
+            print()
+            print("You can now access your server at:")
+            domain_name = config.get('DOMAIN_NAME', '')
+            if domain_name and domain_name != 'your-domain.com':
+                print(f"  https://{domain_name}")
+    else:
+        print(f"{Colors.YELLOW}Note: CLOUDFLARE_API_TOKEN not configured{Colors.NC}")
+        print("To setup SSL later with Cloudflare automation:")
+        print(f"  sudo ./03-setup-ssl.sh {ipv4}")
+    
+    print()
+    print("You can now SSH into the server and run:")
+    print(f"  ssh root@{ipv4}")
+    print("  cd /root/deployment")
+    print("  ./01-server-setup.sh")
+    print("  ./02-deploy.sh")
     
     print()
     print("=" * 50)

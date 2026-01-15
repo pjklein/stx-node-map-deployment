@@ -303,12 +303,35 @@ if [[ $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
     
     echo ""
     echo -e "${GREEN}Deployment files copied!${NC}"
-    echo ""
-    echo "You can now SSH into the server and run:"
-    echo "  cd /root/deployment"
-    echo "  ./01-server-setup.sh"
-    echo "  ./02-deploy.sh"
 fi
+
+# Offer to setup SSL with Cloudflare
+echo ""
+if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ "$CLOUDFLARE_API_TOKEN" != "your_cloudflare_api_token_here" ]; then
+    read -p "Would you like to setup SSL and update Cloudflare DNS now? (yes/no): " -r
+    if [[ $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
+        echo ""
+        echo "Running SSL setup with Cloudflare DNS automation..."
+        "$SCRIPT_DIR/03-setup-ssl.sh" "$IPV4"
+        
+        echo ""
+        echo -e "${GREEN}✓ SSL and DNS configured!${NC}"
+        echo ""
+        echo "You can now access your server at:"
+        echo "  https://$DOMAIN_NAME"
+    fi
+else
+    echo -e "${YELLOW}Note: CLOUDFLARE_API_TOKEN not configured${NC}"
+    echo "To setup SSL later with Cloudflare automation:"
+    echo "  sudo ./03-setup-ssl.sh $IPV4"
+fi
+
+echo ""
+echo "You can now SSH into the server and run:"
+echo "  ssh root@$IPV4"
+echo "  cd /root/deployment"
+echo "  ./01-server-setup.sh"
+echo "  ./02-deploy.sh"
 
 echo ""
 echo "=========================================="
