@@ -12,7 +12,7 @@ nano hetzner-config.env
 Required settings:
 - `HETZNER_API_TOKEN` - Get from: https://console.hetzner.cloud/ → Security → API Tokens
 - `SSH_KEY_NAME` - Upload your SSH key first at: Security → SSH Keys
-- `DOMAIN_NAME` - Your domain (e.g., stacks-node-map.evanidanim.com)
+- `DOMAIN_NAME` - Your domain (e.g., your-domain.com)
 
 ### 2. Create the Server (Python - Recommended)
 ```bash
@@ -45,7 +45,7 @@ cd /root/deployment
 ### 4. Configure DNS
 Point your domain's A record to the server IP:
 ```
-stacks-node-map.evanidanim.com → <SERVER_IP>
+your-domain.com → <SERVER_IP>
 ```
 
 Wait 5-30 minutes for DNS propagation.
@@ -63,8 +63,8 @@ This will:
 - ✅ Redirect HTTP → HTTPS
 
 ### 6. Access Your Application
-- Web: `https://stacks-node-map.evanidanim.com`
-- API: `https://stacks-node-map.evanidanim.com/api/nodes`
+- Web: `https://your-domain.com`
+- API: `https://your-domain.com/api/nodes`
 
 ## 📋 What Gets Created
 
@@ -170,9 +170,9 @@ tail -f /var/log/nginx/stx-node-map-error.log
 ```
 
 ### Need to update repository URL in deploy script
-Edit line 9 in `02-deploy.sh`:
+Edit the `hetzner-config.env` file to set your GitHub username:
 ```bash
-REPO_URL="https://github.com/YOUR_USERNAME/stx-node-map-monorepo.git"
+GITHUB_USERNAME="your-username"
 ```
 
 ## 📚 Full Documentation
