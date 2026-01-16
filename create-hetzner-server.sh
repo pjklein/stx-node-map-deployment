@@ -261,12 +261,12 @@ Next Steps:
    ssh root@$IPV4
 
 2. Run the server setup script:
-   # Copy deployment files to server
-   scp -r deployment/ root@$IPV4:/root/
+   # Copy deployment files to server (if not already copied)
+   scp -r deployment/ root@$IPV4:/tmp/
    
    # SSH in and run setup
    ssh root@$IPV4
-   cd /root/deployment
+   cd /tmp/deployment
    SSH_KEY_NAME=$SSH_KEY_NAME ./01-server-setup.sh
 
    This will:
@@ -308,7 +308,7 @@ if [[ $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
     sleep 10
     
     echo "Copying deployment files..."
-    scp -o StrictHostKeyChecking=no -r "$SCRIPT_DIR" root@$IPV4:/root/deployment
+    scp -o StrictHostKeyChecking=no -r "$SCRIPT_DIR" root@$IPV4:/tmp/deployment
     
     echo ""
     echo -e "${GREEN}Deployment files copied!${NC}"

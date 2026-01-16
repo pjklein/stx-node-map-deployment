@@ -263,12 +263,12 @@ Next Steps:
    ssh root@{ipv4}
 
 2. Run the server setup script:
-   # Copy deployment files to server
-   scp -r deployment/ root@{ipv4}:/root/
+   # Copy deployment files to server (if not already copied)
+   scp -r deployment/ root@{ipv4}:/tmp/
    
    # SSH in and run setup
    ssh root@{ipv4}
-   cd /root/deployment
+   cd /tmp/deployment
    SSH_KEY_NAME={ssh_key_name} ./01-server-setup.sh
 
    This will:
@@ -385,7 +385,7 @@ def main():
         
         print("Copying deployment files...")
         script_dir = Path(__file__).parent
-        os.system(f"scp -o StrictHostKeyChecking=no -r {script_dir} root@{ipv4}:/root/deployment")
+        os.system(f"scp -o StrictHostKeyChecking=no -r {script_dir} root@{ipv4}:/tmp/deployment")
         
         print()
         print(f"{Colors.GREEN}Deployment files copied!{Colors.NC}")
