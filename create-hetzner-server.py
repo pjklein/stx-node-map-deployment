@@ -230,6 +230,7 @@ def save_server_info(config, server, root_password, firewall_id):
     
     ipv4 = server['public_net']['ipv4']['ip']
     ipv6 = server['public_net'].get('ipv6', {}).get('ip', 'N/A')
+    ssh_key_name = config.get('SSH_KEY_NAME', 'admin')
     
     info = f"""==========================================
 STX Node Map Server Information
@@ -258,26 +259,35 @@ Access:
 ==========================================
 Next Steps:
 ==========================================
-1. SSH into the server:
+1. SSH into the server as root:
    ssh root@{ipv4}
 
 2. Run the server setup script:
-   wget https://your-repo/deployment/01-server-setup.sh
-   chmod +x 01-server-setup.sh
-   ./01-server-setup.sh
-
-   OR manually copy the deployment files:
+   # Copy deployment files to server
    scp -r deployment/ root@{ipv4}:/root/
+   
+   # SSH in and run setup
+   ssh root@{ipv4}
+   cd /root/deployment
+   SSH_KEY_NAME={ssh_key_name} ./01-server-setup.sh
 
-3. Clone your repository and deploy:
-   cd /root
+   This will:
+   - Create admin user '{ssh_key_name}' with sudo access
+   - Disable root SSH login
+   - Disable password authentication
+   - Set up key-only authentication
+
+3. Test SSH as admin user BEFORE logging out of root:
+   ssh {ssh_key_name}@{ipv4}
+
+4. Clone your repository and deploy:
+   ssh {ssh_key_name}@{ipv4}
+   sudo -i
+   cd /opt/stx-node-map
    ./deployment/02-deploy.sh
 
-4. (Optional) Configure DNS:
-   Point your domain to: {ipv4}
-
-5. (Optional) Setup SSL:
-   certbot --nginx -d your-domain.com
+5. (Optional) Configure DNS and SSL:
+   ./deployment/03-setup-ssl.sh {ipv4}
 
 ==========================================
 """

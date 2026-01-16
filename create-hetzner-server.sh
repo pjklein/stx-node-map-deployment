@@ -257,26 +257,35 @@ $([ -n "$FIREWALL_ID" ] && echo "Firewall ID: $FIREWALL_ID" || echo "Firewall: d
 ========================================
 Next Steps:
 ========================================
-1. SSH into the server:
+1. SSH into the server as root:
    ssh root@$IPV4
 
 2. Run the server setup script:
-   wget https://your-repo/deployment/01-server-setup.sh
-   chmod +x 01-server-setup.sh
-   ./01-server-setup.sh
-
-   OR manually copy the deployment files:
+   # Copy deployment files to server
    scp -r deployment/ root@$IPV4:/root/
+   
+   # SSH in and run setup
+   ssh root@$IPV4
+   cd /root/deployment
+   SSH_KEY_NAME=$SSH_KEY_NAME ./01-server-setup.sh
 
-3. Clone your repository and deploy:
-   cd /root
+   This will:
+   - Create admin user '$SSH_KEY_NAME' with sudo access
+   - Disable root SSH login
+   - Disable password authentication
+   - Set up key-only authentication
+
+3. Test SSH as admin user BEFORE logging out of root:
+   ssh $SSH_KEY_NAME@$IPV4
+
+4. Clone your repository and deploy:
+   ssh $SSH_KEY_NAME@$IPV4
+   sudo -i
+   cd /opt/stx-node-map
    ./deployment/02-deploy.sh
 
-4. (Optional) Configure DNS:
-   Point your domain to: $IPV4
-
-5. (Optional) Setup SSL:
-   certbot --nginx -d your-domain.com
+5. (Optional) Configure DNS and SSL:
+   ./deployment/03-setup-ssl.sh $IPV4
 
 ========================================
 EOF
