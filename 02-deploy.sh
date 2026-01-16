@@ -123,11 +123,30 @@ cd "$APP_DIR/frontend"
 # Create production .env file
 if [ ! -f ".env.production" ]; then
     echo "Creating .env.production..."
-    cat > .env.production.tmp << 'EOF'
+    
+    # Copy from example if it exists
+    if [ -f ".env.production.example" ]; then
+        run_cmd -u stx cp .env.production.example .env.production
+        echo "Copied from .env.production.example"
+    else
+        # Create basic version
+        cat > .env.production.tmp << 'EOF'
 REACT_APP_API_URL=/api
 GENERATE_SOURCEMAP=false
 EOF
-    run_cmd -u stx mv .env.production.tmp .env.production
+        run_cmd -u stx mv .env.production.tmp .env.production
+    fi
+    
+    # Update DOMAIN_NAME if configured
+    if [ -n "$DOMAIN_NAME" ]; then
+        echo "Updating .env.production with domain: $DOMAIN_NAME"
+        # Update any REACT_APP_DOMAIN or similar variables
+        run_cmd -u stx sed -i "s|REACT_APP_DOMAIN=.*|REACT_APP_DOMAIN=https://$DOMAIN_NAME|g" .env.production
+        # Add if doesn't exist
+        if ! grep -q "REACT_APP_DOMAIN" .env.production; then
+            echo "REACT_APP_DOMAIN=https://$DOMAIN_NAME" >> .env.production
+        fi
+    fi
 fi
 
 # Install dependencies

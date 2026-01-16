@@ -13,6 +13,7 @@ This guide covers deploying the STX Node Map application to a Hetzner Cloud serv
 ### Option 1: Automated Server Creation (Python)
 
 1. **Configure the deployment**:
+
    ```bash
    cd deployment
    cp hetzner-config.env.example hetzner-config.env
@@ -20,11 +21,13 @@ This guide covers deploying the STX Node Map application to a Hetzner Cloud serv
    ```
 
 2. **Install Python dependencies** (if using Python script):
+
    ```bash
    pip3 install requests
    ```
 
 3. **Run the server creation script**:
+
    ```bash
    # Using Python (recommended)
    chmod +x create-hetzner-server.py
@@ -42,11 +45,13 @@ This guide covers deploying the STX Node Map application to a Hetzner Cloud serv
    - Optionally copy deployment files to the server
 
 5. **SSH into the server**:
+
    ```bash
    ssh root@<SERVER_IP>
    ```
 
 6. **Run the deployment**:
+
    ```bash
    cd /root/deployment
    ./01-server-setup.sh
@@ -63,11 +68,13 @@ This guide covers deploying the STX Node Map application to a Hetzner Cloud serv
    - Configure firewall (ports 22, 80, 443)
 
 2. **Copy deployment files**:
+
    ```bash
    scp -r deployment/ root@<SERVER_IP>:/root/
    ```
 
 3. **SSH and deploy**:
+
    ```bash
    ssh root@<SERVER_IP>
    cd /root/deployment
@@ -98,7 +105,7 @@ ENABLE_BACKUPS="false"
 ### Server Types
 
 | Type | vCPU | RAM | Disk | Price/month |
-|------|------|-----|------|-------------|
+| ------ | ------ | ----- | ------ | ------------- |
 | cx11 | 1 | 2 GB | 20 GB | ~€3.79 |
 | cx21 | 2 | 4 GB | 40 GB | ~€5.83 |
 | cx31 | 2 | 8 GB | 80 GB | ~€11.05 |
@@ -118,12 +125,14 @@ ENABLE_BACKUPS="false"
 ### 01-server-setup.sh
 
 Initial server configuration:
+
 - Updates system packages
 - Installs Python 3, Node.js 18, Nginx
 - Creates application user and directories
 - Configures firewall (UFW)
 
 **Usage**:
+
 ```bash
 sudo ./01-server-setup.sh
 ```
@@ -131,6 +140,7 @@ sudo ./01-server-setup.sh
 ### 02-deploy.sh
 
 Application deployment:
+
 - Clones/updates repository
 - Sets up Python virtual environment
 - Installs backend dependencies
@@ -140,6 +150,7 @@ Application deployment:
 - Starts all services
 
 **Usage**:
+
 ```bash
 sudo ./02-deploy.sh
 ```
@@ -161,12 +172,14 @@ Internet
 ## Services
 
 ### API Service
+
 - **Service**: `stx-node-map-api`
 - **Port**: 8089 (internal)
 - **Workers**: 4 Gunicorn workers
 - **Auto-restart**: Yes
 
 **Commands**:
+
 ```bash
 systemctl status stx-node-map-api
 systemctl restart stx-node-map-api
@@ -174,12 +187,14 @@ journalctl -u stx-node-map-api -f
 ```
 
 ### Discoverer Service
+
 - **Service**: `stx-node-map-discoverer`
 - **Function**: Scans network for STX nodes
 - **Runs**: Continuously in background
 - **Auto-restart**: Yes
 
 **Commands**:
+
 ```bash
 systemctl status stx-node-map-discoverer
 systemctl restart stx-node-map-discoverer
@@ -187,11 +202,13 @@ journalctl -u stx-node-map-discoverer -f
 ```
 
 ### Nginx
+
 - **Serves**: Frontend static files
 - **Proxies**: API requests to backend
 - **Port**: 80 (HTTP), 443 (HTTPS with SSL)
 
 **Commands**:
+
 ```bash
 systemctl status nginx
 systemctl restart nginx
@@ -213,13 +230,15 @@ certbot --nginx -d your-domain.com
 ```
 
 Update DNS:
-```
+
+```DNS
 A Record: your-domain.com → <SERVER_IP>
 ```
 
 ## Monitoring & Logs
 
 ### Application Logs
+
 ```bash
 # API logs
 tail -f /var/log/stx-node-map/api-access.log
@@ -233,6 +252,7 @@ tail -f /var/log/stx-node-map/*.log
 ```
 
 ### System Logs
+
 ```bash
 # API service
 journalctl -u stx-node-map-api -f
@@ -245,6 +265,7 @@ journalctl -u nginx -f
 ```
 
 ### Check Service Status
+
 ```bash
 systemctl status stx-node-map-api
 systemctl status stx-node-map-discoverer
@@ -263,6 +284,7 @@ sudo ./02-deploy.sh
 ## Troubleshooting
 
 ### API not responding
+
 ```bash
 # Check service status
 systemctl status stx-node-map-api
@@ -275,6 +297,7 @@ systemctl restart stx-node-map-api
 ```
 
 ### Frontend not loading
+
 ```bash
 # Check Nginx status
 systemctl status nginx
@@ -290,6 +313,7 @@ systemctl restart nginx
 ```
 
 ### Discoverer not running
+
 ```bash
 # Check service
 systemctl status stx-node-map-discoverer
@@ -304,6 +328,7 @@ systemctl restart stx-node-map-discoverer
 ## Cost Estimation
 
 **Monthly Costs** (approximate):
+
 - Server (cx21): €5.83
 - Backups (optional): €1.17
 - Traffic: Free (20TB included)
@@ -319,21 +344,23 @@ systemctl restart stx-node-map-discoverer
 
 ## Performance Tuning
 
-### For higher traffic:
+### For higher traffic
+
 1. Increase Gunicorn workers in `stx-node-map-api.service`
 2. Upgrade to larger server type (cx31 or cx41)
 3. Enable Nginx caching for static assets
 4. Consider adding a CDN for static files
 
-### For better response times:
+### For better response times
+
 1. Choose server location closest to users
 2. Enable Nginx gzip compression (already configured)
 3. Use HTTP/2 with SSL
 
 ## Support
 
-- **Hetzner Docs**: https://docs.hetzner.com/
-- **Hetzner API**: https://docs.hetzner.cloud/
+- **Hetzner Docs**: <https://docs.hetzner.com/>
+- **Hetzner API**: <https://docs.hetzner.cloud/>
 - **Project Repository**: Update with your repo URL
 
 ## License

@@ -3,6 +3,7 @@
 ## 🚀 Quick Deploy (5 minutes)
 
 ### 1. Configure Hetzner Settings
+
 ```bash
 cd /home/red/stx-infra/deployment
 cp hetzner-config.env.example hetzner-config.env
@@ -10,11 +11,13 @@ nano hetzner-config.env
 ```
 
 Required settings:
-- `HETZNER_API_TOKEN` - Get from: https://console.hetzner.com/ → Security → API Tokens
+
+- `HETZNER_API_TOKEN` - Get from: <https://console.hetzner.com/> → Security → API Tokens
 - `SSH_KEY_NAME` - Upload your SSH key first at: Security → SSH Keys
 - `DOMAIN_NAME` - Your domain (e.g., your-domain.com)
 
 ### 2. Create the Server (Python - Recommended)
+
 ```bash
 # Install requests library if needed
 pip3 install requests
@@ -24,6 +27,7 @@ pip3 install requests
 ```
 
 OR using Bash:
+
 ```bash
 # Requires: curl, jq
 sudo apt-get install -y curl jq  # If not installed
@@ -31,6 +35,7 @@ sudo apt-get install -y curl jq  # If not installed
 ```
 
 ### 3. Deploy the Application
+
 ```bash
 # The script will offer to copy files automatically
 # If you chose 'yes', SSH into server:
@@ -43,7 +48,9 @@ cd /root/deployment
 ```
 
 ### 4. Configure DNS
+
 Point your domain's A record to the server IP:
+
 ```
 your-domain.com → <SERVER_IP>
 ```
@@ -51,18 +58,21 @@ your-domain.com → <SERVER_IP>
 Wait 5-30 minutes for DNS propagation.
 
 ### 5. Setup SSL Certificate
+
 ```bash
 # From the deployment directory on your local machine (or the server):
 sudo ./03-setup-ssl.sh
 ```
 
 This will:
+
 - ✅ Get a Let's Encrypt wildcard certificate
 - ✅ Configure Nginx to use it
 - ✅ Setup auto-renewal
 - ✅ Redirect HTTP → HTTPS
 
 ### 6. Access Your Application
+
 - Web: `https://your-domain.com`
 - API: `https://your-domain.com/api/nodes`
 
@@ -79,6 +89,7 @@ This will:
 ## 🔧 Common Commands
 
 ### Check Service Status
+
 ```bash
 systemctl status stx-node-map-api
 systemctl status stx-node-map-discoverer
@@ -86,6 +97,7 @@ systemctl status nginx
 ```
 
 ### View Logs
+
 ```bash
 journalctl -u stx-node-map-api -f
 journalctl -u stx-node-map-discoverer -f
@@ -93,6 +105,7 @@ tail -f /var/log/stx-node-map/*.log
 ```
 
 ### Restart Services
+
 ```bash
 systemctl restart stx-node-map-api
 systemctl restart stx-node-map-discoverer
@@ -100,6 +113,7 @@ systemctl restart nginx
 ```
 
 ### Update Application
+
 ```bash
 cd /opt/stx-node-map
 sudo -u stx git pull
@@ -108,6 +122,7 @@ sudo ./02-deploy.sh
 ```
 
 ### SSL Certificate Management
+
 ```bash
 # View all certificates
 sudo certbot certificates
@@ -123,6 +138,7 @@ openssl x509 -in /etc/letsencrypt/live/DOMAIN/fullchain.pem -text -noout
 ```
 
 ## 💰 Cost
+
 - **cx21 Server**: ~€5.83/month
 - **Traffic**: Free (20TB included)
 - **Total**: ~€6/month
@@ -156,6 +172,7 @@ openssl x509 -in /etc/letsencrypt/live/DOMAIN/fullchain.pem -text -noout
 ## 🛠️ Troubleshooting
 
 ### API not responding
+
 ```bash
 systemctl status stx-node-map-api
 journalctl -u stx-node-map-api -n 50
@@ -163,6 +180,7 @@ systemctl restart stx-node-map-api
 ```
 
 ### Frontend not loading
+
 ```bash
 nginx -t  # Test config
 systemctl restart nginx
@@ -170,7 +188,9 @@ tail -f /var/log/nginx/stx-node-map-error.log
 ```
 
 ### Need to update repository URL in deploy script
+
 Edit the `hetzner-config.env` file to set your GitHub username:
+
 ```bash
 GITHUB_USERNAME="your-username"
 ```
