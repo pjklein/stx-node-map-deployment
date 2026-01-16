@@ -51,17 +51,38 @@ check_root
 # Clone or update repository
 echo "Step 1: Cloning/updating repository..."
 if [ -d "$APP_DIR/.git" ]; then
-    echo "Repository exists, updating..."
+    echo "Repository exists, checking remote URL..."
     cd "$APP_DIR"
-    run_cmd -u stx git pull
-else
-    echo "Cloning repository..."
-    if [ -z "$(ls -A $APP_DIR 2>/dev/null)" ]; then
-        run_cmd -u stx git clone "$REPO_URL" "$APP_DIR"
+    CURRENT_URL=$(run_cmd -u stx git remote get-url origin 2>/dev/null || echo "")
+    
+    if [ "$CURRENT_URL" = "$REPO_URL" ]; then
+        echo "Correct repository found, updating..."
+        run_cmd -u stx git pull
     else
-        echo "ERROR: $APP_DIR is not empty. Please backup and remove contents first."
+        echo "ERROR: $APP_DIR contains a different git repository!"
+        echo "  Expected: $REPO_URL"
+        echo "  Found:    $CURRENT_URL"
+        echo ""
+        echo "Please remove the contents and try again:"
+        echo "  sudo rm -rf $APP_DIR/*"
+        echo "  sudo rm -rf $APP_DIR/.git"
         exit 1
     fi
+else
+    echo "Cloning repository..."
+    # Check if directory exists and is not empty
+    if [ -d "$APP_DIR" ] && [ "$(ls -A $APP_DIR 2>/dev/null)" ]; then
+        echo "ERROR: $APP_DIR is not empty. Please backup and remove contents first."
+        echo "  sudo rm -rf $APP_DIR/*"
+        exit 1
+    fi
+    
+    # Ensure directory exists with correct ownership
+    run_cmd mkdir -p "$APP_DIR"
+    run_cmd chown stx:stx "$APP_DIR"
+    
+    # Clone the repository
+    run_cmd -u stx git clone "$REPO_URL" "$APP_DIR"
 fi
 
 cd "$APP_DIR"
