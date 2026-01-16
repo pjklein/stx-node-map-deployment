@@ -141,9 +141,9 @@ ufw --force reset
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow ssh
-ufw allow http
 ufw allow https
 ufw --force enable
+echo "Firewall configured: SSH (22) and HTTPS (443) only"
 
 # Restart SSH to apply security changes
 echo "Step 11: Restarting SSH service..."
