@@ -37,12 +37,28 @@ check_root() {
     fi
 }
 
-# Function to run command with sudo if not root
+# Function to run command with sudo, optionally as a different user
 run_cmd() {
+    local run_as_user=""
+    
+    # Check if -u flag is provided
+    if [ "$1" = "-u" ]; then
+        run_as_user="$2"
+        shift 2
+    fi
+    
     if [ "$IS_ROOT" = true ]; then
-        "$@"
+        if [ -n "$run_as_user" ]; then
+            sudo -u "$run_as_user" "$@"
+        else
+            "$@"
+        fi
     else
-        sudo "$@"
+        if [ -n "$run_as_user" ]; then
+            sudo -u "$run_as_user" "$@"
+        else
+            sudo "$@"
+        fi
     fi
 }
 
