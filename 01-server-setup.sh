@@ -150,6 +150,14 @@ echo "Step 11: Restarting SSH service..."
 systemctl restart ssh
 echo "SSH service restarted with new security settings"
 
+# Fix ownership of deployment files if they exist
+if [ -d "/tmp/deployment" ]; then
+    echo ""
+    echo "Step 12: Fixing deployment files ownership..."
+    chown -R $ADMIN_USER:$ADMIN_USER /tmp/deployment
+    echo "Deployment files ownership updated to $ADMIN_USER"
+fi
+
 echo ""
 echo "=========================================="
 echo "Basic server setup completed!"
