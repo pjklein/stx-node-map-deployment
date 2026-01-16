@@ -5,12 +5,14 @@ Automated deployment scripts and configuration for deploying the STX Node Map ap
 ## 🚀 Quick Start
 
 1. **Setup configuration**:
+
    ```bash
    cp hetzner-config.env.example hetzner-config.env
    nano hetzner-config.env  # Add your Hetzner API token
    ```
 
 2. **Create server**:
+
    ```bash
    # Install Python dependencies
    pip3 install requests
@@ -20,6 +22,7 @@ Automated deployment scripts and configuration for deploying the STX Node Map ap
    ```
 
 3. **Deploy application**:
+
    ```bash
    # SSH into the created server
    ssh root@<SERVER_IP>
@@ -48,7 +51,7 @@ Automated deployment scripts and configuration for deploying the STX Node Map ap
 
 ## 🔑 Prerequisites
 
-1. **Hetzner Cloud Account**: https://console.hetzner.com/
+1. **Hetzner Cloud Account**: <https://console.hetzner.com/>
 2. **API Token**: Console → Project → Security → API Tokens
 3. **SSH Key**: Upload at Console → Project → Security → SSH Keys
 

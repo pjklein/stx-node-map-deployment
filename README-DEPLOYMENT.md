@@ -157,7 +157,7 @@ sudo ./02-deploy.sh
 
 ## Architecture
 
-```
+```text
 Internet
     ↓
   Nginx (Port 80/443)

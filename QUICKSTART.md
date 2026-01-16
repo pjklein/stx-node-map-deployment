@@ -51,7 +51,7 @@ cd /root/deployment
 
 Point your domain's A record to the server IP:
 
-```
+```text
 your-domain.com → <SERVER_IP>
 ```
 
@@ -145,7 +145,7 @@ openssl x509 -in /etc/letsencrypt/live/DOMAIN/fullchain.pem -text -noout
 
 ## 📁 File Structure on Server
 
-```
+```text
 /opt/stx-node-map/          # Application code
 ├── backend/                # Python Flask API
 │   ├── .venv/             # Python virtual environment
