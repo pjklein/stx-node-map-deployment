@@ -103,10 +103,36 @@ fi
 
 cd "$APP_DIR"
 
+# Verify we have the right repository structure
+if [ ! -d "backend" ] || [ ! -d "frontend" ]; then
+    echo "ERROR: Repository structure is incorrect!"
+    echo "Expected directories 'backend' and 'frontend' in $APP_DIR"
+    echo ""
+    echo "Current contents of $APP_DIR:"
+    ls -la "$APP_DIR"
+    echo ""
+    echo "Git remote URL:"
+    run_cmd -u stx git remote get-url origin 2>/dev/null || echo "No git remote found"
+    echo ""
+    echo "Please check the repository structure matches the monorepo"
+    exit 1
+fi
+
 # Backend setup
 echo ""
 echo "Step 2: Setting up backend..."
 cd "$BACKEND_DIR"
+
+# Verify requirements.txt exists
+if [ ! -f "requirements.txt" ]; then
+    echo "ERROR: requirements.txt not found in $BACKEND_DIR"
+    echo ""
+    echo "Current contents:"
+    ls -la
+    echo ""
+    echo "Please verify the monorepo structure is correct"
+    exit 1
+fi
 
 # Create virtual environment
 if [ ! -d ".venv" ]; then
