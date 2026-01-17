@@ -16,7 +16,7 @@ Required settings:
 - `SSH_KEY_NAME` - Upload your SSH key first at: Security → SSH Keys
 - `DOMAIN_NAME` - Your domain (e.g., your-domain.com)
 
-### 2. Create the Server (Python - Recommended)
+### 2. Create the Server
 
 ```bash
 # Install requests library if needed
@@ -24,14 +24,6 @@ pip3 install requests
 
 # Run the creation script
 ./create-hetzner-server.py
-```
-
-OR using Bash:
-
-```bash
-# Requires: curl, jq
-sudo apt-get install -y curl jq  # If not installed
-./create-hetzner-server.sh
 ```
 
 ### 3. Initial Setup (as root)

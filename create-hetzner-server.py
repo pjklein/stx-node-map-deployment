@@ -131,8 +131,17 @@ def check_existing_server(api, server_name):
     
     return None
 
+def get_public_ip():
+    """Get the public IP address of the local machine"""
+    try:
+        response = requests.get('https://api.ipify.org?format=json', timeout=5)
+        return response.json()['ip']
+    except:
+        print(f"{Colors.YELLOW}Warning: Could not detect public IP, SSH will allow from anywhere{Colors.NC}")
+        return None
+
 def create_firewall(api, firewall_name):
-    """Create firewall with standard rules"""
+    """Create firewall with restrictive rules"""
     # Check if firewall already exists
     response = api.get("firewalls")
     for firewall in response['firewalls']:
@@ -140,23 +149,24 @@ def create_firewall(api, firewall_name):
             print(f"Firewall already exists (ID: {firewall['id']})")
             return firewall['id']
     
-    # Create new firewall
+    # Get public IP for SSH restriction
+    public_ip = get_public_ip()
+    ssh_source_ips = [f"{public_ip}/32"] if public_ip else ["0.0.0.0/0", "::/0"]
+    
+    if public_ip:
+        print(f"Restricting SSH access to: {public_ip}")
+    
+    # Create new firewall with restrictive rules
     firewall_data = {
         "name": firewall_name,
         "rules": [
+            # Inbound rules
             {
                 "direction": "in",
                 "protocol": "tcp",
                 "port": "22",
-                "source_ips": ["0.0.0.0/0", "::/0"],
-                "description": "SSH"
-            },
-            {
-                "direction": "in",
-                "protocol": "tcp",
-                "port": "80",
-                "source_ips": ["0.0.0.0/0", "::/0"],
-                "description": "HTTP"
+                "source_ips": ssh_source_ips,
+                "description": "SSH (restricted to deployment machine)"
             },
             {
                 "direction": "in",
@@ -165,11 +175,34 @@ def create_firewall(api, firewall_name):
                 "source_ips": ["0.0.0.0/0", "::/0"],
                 "description": "HTTPS"
             },
+            # Outbound rules
             {
-                "direction": "in",
-                "protocol": "icmp",
-                "source_ips": ["0.0.0.0/0", "::/0"],
-                "description": "ICMP (ping)"
+                "direction": "out",
+                "protocol": "tcp",
+                "port": "80",
+                "destination_ips": ["0.0.0.0/0", "::/0"],
+                "description": "HTTP outbound"
+            },
+            {
+                "direction": "out",
+                "protocol": "tcp",
+                "port": "443",
+                "destination_ips": ["0.0.0.0/0", "::/0"],
+                "description": "HTTPS outbound"
+            },
+            {
+                "direction": "out",
+                "protocol": "tcp",
+                "port": "20443",
+                "destination_ips": ["0.0.0.0/0", "::/0"],
+                "description": "Stacks API"
+            },
+            {
+                "direction": "out",
+                "protocol": "tcp",
+                "port": "20444",
+                "destination_ips": ["0.0.0.0/0", "::/0"],
+                "description": "Stacks P2P"
             }
         ]
     }

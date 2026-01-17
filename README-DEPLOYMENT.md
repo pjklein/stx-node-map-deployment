@@ -29,13 +29,8 @@ This guide covers deploying the STX Node Map application to a Hetzner Cloud serv
 3. **Run the server creation script**:
 
    ```bash
-   # Using Python (recommended)
    chmod +x create-hetzner-server.py
    ./create-hetzner-server.py
-   
-   # OR using Bash
-   chmod +x create-hetzner-server.sh
-   ./create-hetzner-server.sh
    ```
 
 4. **The script will**:

@@ -52,7 +52,6 @@ Automated deployment scripts and configuration for deploying the STX Node Map ap
 ## 📁 Files
 
 - `create-hetzner-server.py` - Python script to create Hetzner server via API
-- `create-hetzner-server.sh` - Bash alternative for server creation
 - `hetzner-config.env.example` - Configuration template
 - `01-server-setup.sh` - Initial server setup (packages, users, firewall)
 - `02-deploy.sh` - Application deployment script
