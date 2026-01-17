@@ -297,11 +297,88 @@ Next Steps:
     
     return info_file, ipv4
 
+def clean_resources(config, api):
+    """Delete server and firewall"""
+    server_name = config['SERVER_NAME']
+    firewall_name = f"{server_name}-firewall"
+    
+    print(f"{Colors.YELLOW}Cleaning up resources for '{server_name}'...{Colors.NC}")
+    print()
+    
+    # Delete server
+    print("Step 1: Finding and deleting server...")
+    response = api.get("servers")
+    server_id = None
+    
+    for server in response['servers']:
+        if server['name'] == server_name:
+            server_id = server['id']
+            break
+    
+    if server_id:
+        print(f"  Found server (ID: {server_id})")
+        response = input("  Delete this server? (yes/no): ")
+        if response.lower() in ['yes', 'y']:
+            api.delete(f"servers/{server_id}")
+            print(f"  {Colors.GREEN}✓ Server deleted{Colors.NC}")
+            time.sleep(2)
+        else:
+            print("  Skipped server deletion")
+    else:
+        print(f"  No server named '{server_name}' found")
+    
+    # Delete firewall
+    print()
+    print("Step 2: Finding and deleting firewall...")
+    response = api.get("firewalls")
+    firewall_id = None
+    
+    for firewall in response['firewalls']:
+        if firewall['name'] == firewall_name:
+            firewall_id = firewall['id']
+            break
+    
+    if firewall_id:
+        print(f"  Found firewall (ID: {firewall_id})")
+        response = input("  Delete this firewall? (yes/no): ")
+        if response.lower() in ['yes', 'y']:
+            api.delete(f"firewalls/{firewall_id}")
+            print(f"  {Colors.GREEN}✓ Firewall deleted{Colors.NC}")
+        else:
+            print("  Skipped firewall deletion")
+    else:
+        print(f"  No firewall named '{firewall_name}' found")
+    
+    print()
+    print(f"{Colors.GREEN}✓ Cleanup complete!{Colors.NC}")
+    print()
+
 def main():
     print("=" * 50)
     print("Hetzner Cloud Server Creation")
     print("=" * 50)
     print()
+    
+    # Check for commands
+    if len(sys.argv) > 1:
+        command = sys.argv[1].lower()
+        if command == 'clean':
+            config = load_config()
+            validate_config(config)
+            api = HetznerAPI(config['HETZNER_API_TOKEN'])
+            clean_resources(config, api)
+            return
+        elif command in ['help', '-h', '--help']:
+            print("Usage:")
+            print("  ./create-hetzner-server.py          Create a new server")
+            print("  ./create-hetzner-server.py clean    Delete server and firewall")
+            print("  ./create-hetzner-server.py help     Show this help message")
+            print()
+            return
+        else:
+            print(f"Unknown command: {command}")
+            print("Use 'clean' or 'help' for more info")
+            sys.exit(1)
     
     # Load and validate configuration
     config = load_config()
