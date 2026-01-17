@@ -288,8 +288,8 @@ Network:
   IPv6:       {ipv6}
 
 Access:
-  SSH:        ssh root@{ipv4}
-  Web:        http://{ipv4}
+  Initial SSH: ssh root@{ipv4}
+  Admin SSH:   ssh {ssh_key_name}@{ipv4} (after step 2)
 
 {f"Root Password: {root_password}" if root_password else "Root Password: (using SSH key)"}
 {f"Firewall ID: {firewall_id}" if firewall_id else "Firewall: disabled"}
@@ -297,36 +297,66 @@ Access:
 ==========================================
 Next Steps:
 ==========================================
-1. SSH into the server as root:
+
+IMPORTANT: Before starting, ensure you have copied example files:
+  - hetzner-config.env.example → hetzner-config.env (configured)
+  - Any other .example files in backend/frontend if needed
+
+1. SSH into the server as root (initial access only):
    ssh root@{ipv4}
 
-2. Run the server setup script:
-   # Copy deployment files to server (if not already copied)
-   scp -r deployment/ root@{ipv4}:/tmp/
-   
-   # SSH in and run setup
-   ssh root@{ipv4}
+2. Run the server setup script (creates admin user and hardens SSH):
    cd /tmp/deployment
    SSH_KEY_NAME={ssh_key_name} ./01-server-setup.sh
 
-   This will:
-   - Create admin user '{ssh_key_name}' with sudo access
+   This script will:
+   - Install required packages (Python, Node.js, Nginx, Certbot)
+   - Create admin user '{ssh_key_name}' with passwordless sudo
+   - Copy SSH keys from root to admin user
    - Disable root SSH login
-   - Disable password authentication
-   - Set up key-only authentication
+   - Disable password authentication (SSH key only)
+   - Configure UFW firewall
+   - Set systemd-journald disk limits
 
-3. Test SSH as admin user BEFORE logging out of root:
+   IMPORTANT: Test admin SSH in a new terminal BEFORE logging out of root!
+
+3. Test admin user access (in a NEW terminal, keep root session open):
    ssh {ssh_key_name}@{ipv4}
+   
+   If successful, you can exit the root session.
 
-4. Clone your repository and deploy:
+4. Deploy the application (as admin user):
    ssh {ssh_key_name}@{ipv4}
-   sudo -i
-   cd /opt/stx-node-map
-   ./deployment/02-deploy.sh
+   cd /tmp/deployment
+   sudo ./02-deploy.sh
 
-5. (Optional) Configure DNS and SSL:
-   ./deployment/03-setup-ssl.sh {ipv4}
+   This script will:
+   - Clone the monorepo from GitHub
+   - Set up Python virtual environment
+   - Install backend dependencies
+   - Build frontend with Yarn
+   - Install systemd services
+   - Start the application
 
+5. Configure DNS (point your domain to server IP):
+   A record: {config.get('DOMAIN_NAME', 'your-domain.com')} → {ipv4}
+   
+   Wait 5-30 minutes for DNS propagation.
+
+6. Setup SSL certificate (as admin user):
+   ssh {ssh_key_name}@{ipv4}
+   cd /tmp/deployment
+   sudo ./03-setup-ssl.sh
+
+   This script will:
+   - Get wildcard SSL certificate from Let's Encrypt
+   - Use Cloudflare DNS validation
+   - Update Cloudflare A record automatically
+   - Configure Nginx with SSL
+   - Set up auto-renewal
+
+==========================================
+Access your site at: https://{config.get('DOMAIN_NAME', 'your-domain.com')}
 ==========================================
 """
     
