@@ -158,6 +158,25 @@ if [ -d "/tmp/deployment" ]; then
     echo "Deployment files ownership updated to $ADMIN_USER"
 fi
 
+# Configure systemd-journald to prevent syslog forwarding and limit disk usage
+echo ""
+echo "Step 13: Configuring systemd-journald..."
+mkdir -p /etc/systemd/journald.conf.d
+
+cat > /etc/systemd/journald.conf.d/99-no-syslog.conf << 'EOF'
+[Journal]
+# Prevent journal from being forwarded to syslog
+ForwardToSyslog=no
+
+# Limit journal disk usage
+SystemMaxUse=500M
+SystemMaxFileSize=50M
+MaxRetentionSec=7day
+EOF
+
+systemctl restart systemd-journald
+echo "Journal configured: No syslog forwarding, max 500MB total, max 7 days retention"
+
 echo ""
 echo "=========================================="
 echo "Basic server setup completed!"
