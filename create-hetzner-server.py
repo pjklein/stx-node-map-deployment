@@ -85,6 +85,11 @@ class HetznerAPI:
                 raise ValueError(f"Unsupported method: {method}")
             
             response.raise_for_status()
+            
+            # Handle 204 No Content (empty response)
+            if response.status_code == 204:
+                return {}
+            
             return response.json()
         except requests.exceptions.RequestException as e:
             print(f"{Colors.RED}API Error: {e}{Colors.NC}")
