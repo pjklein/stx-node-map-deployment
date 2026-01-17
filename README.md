@@ -21,16 +21,32 @@ Automated deployment scripts and configuration for deploying the STX Node Map ap
    ./create-hetzner-server.py
    ```
 
-3. **Deploy application**:
+3. **Initial setup (as root)**:
 
    ```bash
-   # SSH into the created server
+   # SSH into the created server as root
    ssh root@<SERVER_IP>
    
-   # Run deployment scripts
-   cd /root/deployment
-   ./01-server-setup.sh
-   ./02-deploy.sh
+   # Run server setup
+   cd /tmp/deployment
+   SSH_KEY_NAME=pjklein ./01-server-setup.sh
+   ```
+
+4. **Switch to admin user**:
+
+   ```bash
+   # SSH as the new admin user (pjklein)
+   # Logout from root first
+   exit
+   
+   ssh pjklein@<SERVER_IP>
+   ```
+
+5. **Deploy application (as admin user)**:
+
+   ```bash
+   cd /tmp/deployment
+   sudo ./02-deploy.sh
    ```
 
 ## 📁 Files

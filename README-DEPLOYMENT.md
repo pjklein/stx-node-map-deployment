@@ -44,42 +44,51 @@ This guide covers deploying the STX Node Map application to a Hetzner Cloud serv
    - Save server information to `server-info.txt`
    - Optionally copy deployment files to the server
 
-5. **SSH into the server**:
+5. **SSH as root and run initial setup**:
 
    ```bash
    ssh root@<SERVER_IP>
+   cd /tmp/deployment
+   SSH_KEY_NAME=pjklein ./01-server-setup.sh
+   exit  # Logout from root
    ```
 
-6. **Run the deployment**:
+6. **SSH as admin user and deploy**:
 
    ```bash
-   cd /root/deployment
-   ./01-server-setup.sh
-   ./02-deploy.sh
+   ssh pjklein@<SERVER_IP>
+   cd /tmp/deployment
+   sudo ./02-deploy.sh
    ```
 
 ### Option 2: Manual Server Creation
 
 1. **Create server manually** in Hetzner Console:
    - Choose Ubuntu 22.04 or 24.04
-   - Select server type (cx21 recommended for production)
+   - Select server type (cx23 recommended - cx11 is deprecated)
    - Select location (Nuremberg, Falkenstein, or Helsinki for EU)
    - Add your SSH key
-   - Configure firewall (ports 22, 80, 443)
+   - Configure firewall (ports 22, 443 only for .app domains)
 
 2. **Copy deployment files**:
 
    ```bash
-   scp -r deployment/ root@<SERVER_IP>:/root/
+   scp -r deployment/ root@<SERVER_IP>:/tmp/
    ```
 
-3. **SSH and deploy**:
+3. **SSH and deploy** (follow same pattern as automated):
 
    ```bash
+   # As root - initial setup
    ssh root@<SERVER_IP>
-   cd /root/deployment
-   ./01-server-setup.sh
-   ./02-deploy.sh
+   cd /tmp/deployment
+   SSH_KEY_NAME=pjklein ./01-server-setup.sh
+   exit
+   
+   # As admin user - deployment
+   ssh pjklein@<SERVER_IP>
+   cd /tmp/deployment
+   sudo ./02-deploy.sh
    ```
 
 ## Configuration Files
@@ -106,12 +115,14 @@ ENABLE_BACKUPS="false"
 
 | Type | vCPU | RAM | Disk | Price/month |
 | ------ | ------ | ----- | ------ | ------------- |
-| cx11 | 1 | 2 GB | 20 GB | ~€3.79 |
-| cx21 | 2 | 4 GB | 40 GB | ~€5.83 |
-| cx31 | 2 | 8 GB | 80 GB | ~€11.05 |
-| cx41 | 4 | 16 GB | 160 GB | ~€21.50 |
+| cx23 | 2 | 4 GB | 40 GB | €4.49 |
+| cx33 | 4 | 8 GB | 80 GB | €8.99 |
+| cx43 | 8 | 16 GB | 160 GB | €17.99 |
+| cx53 | 16 | 32 GB | 320 GB | €35.99 |
 
-**Recommended**: `cx21` for production (handles ~1000 concurrent users)
+**Note:** cx11, cx21, cx31, cx41 are deprecated. Use cx23+ instead.
+
+**Recommended**: `cx23` for production (2 vCPU, 4GB RAM) - handles ~500-1000 concurrent users
 
 ### Locations
 

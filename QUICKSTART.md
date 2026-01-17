@@ -34,20 +34,40 @@ sudo apt-get install -y curl jq  # If not installed
 ./create-hetzner-server.sh
 ```
 
-### 3. Deploy the Application
+### 3. Initial Setup (as root)
 
 ```bash
-# The script will offer to copy files automatically
-# If you chose 'yes', SSH into server:
+# SSH into server as root (Hetzner default)
 ssh root@<SERVER_IP>
 
-# Run deployment
-cd /root/deployment
-./01-server-setup.sh
-./02-deploy.sh
+# Navigate to deployment directory
+cd /tmp/deployment
+
+# Run server setup (creates admin user)
+SSH_KEY_NAME=pjklein ./01-server-setup.sh
+
+# Logout from root
+exit
 ```
 
-### 4. Configure DNS
+### 4. Switch to Admin User
+
+```bash
+# SSH as the new admin user (pjklein)
+ssh pjklein@<SERVER_IP>
+
+# Navigate to deployment directory
+cd /tmp/deployment
+```
+
+### 5. Deploy Application
+
+```bash
+# Run deployment with sudo (passwordless for pjklein)
+sudo ./02-deploy.sh
+```
+
+### 6. Configure DNS
 
 Point your domain's A record to the server IP:
 
@@ -57,9 +77,12 @@ your-domain.com → <SERVER_IP>
 
 Wait 5-30 minutes for DNS propagation.
 
-### 5. Setup SSL Certificate
+### 7. Setup SSL Certificate
 
 ```bash
+# From server as pjklein with sudo:
+sudo ./03-setup-ssl.sh <SERVER_IP>
+```
 # From the deployment directory on your local machine (or the server):
 sudo ./03-setup-ssl.sh
 ```
