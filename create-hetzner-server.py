@@ -335,8 +335,18 @@ IMPORTANT: Before starting, ensure configuration files are ready:
    - Set up Python virtual environment
    - Install backend dependencies
    - Build frontend with Yarn
+   - Copy .example files to create config files (env.sh, .env.production, config.ts)
    - Install systemd services
    - Start the application
+
+   IMPORTANT: After deployment, review and edit these files if needed:
+   - /opt/stx-node-map/backend/env.sh
+   - /opt/stx-node-map/frontend/.env.production
+   - /opt/stx-node-map/frontend/src/config.ts
+   
+   Then restart services:
+     sudo systemctl restart stx-node-map-api
+     sudo systemctl restart stx-node-map-discoverer
 
 5. Configure DNS (point your domain to server IP):
    A record: {config.get('DOMAIN_NAME', 'your-domain.com')} → {ipv4}

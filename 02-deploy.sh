@@ -155,6 +155,7 @@ if [ ! -f "env.sh" ]; then
     if [ -f "env.sh.example" ]; then
         run_cmd -u stx cp env.sh.example env.sh
         echo "Copied from env.sh.example"
+        echo "REMINDER: Edit $BACKEND_DIR/env.sh if you need custom environment variables"
     else
         # Create basic version
         cat > env.sh.tmp << 'EOF'
@@ -203,6 +204,7 @@ if [ ! -f ".env.production" ]; then
     if [ -f ".env.production.example" ]; then
         run_cmd -u stx cp .env.production.example .env.production
         echo "Copied from .env.production.example"
+        echo "REMINDER: Edit $APP_DIR/frontend/.env.production if you need custom frontend settings"
     else
         # Create basic version
         cat > .env.production.tmp << 'EOF'
@@ -222,6 +224,13 @@ EOF
             echo "REACT_APP_DOMAIN=https://$DOMAIN_NAME" >> .env.production
         fi
     fi
+fi
+
+# Check if config.ts needs to be created from example
+if [ -f "src/config.example.ts" ] && [ ! -f "src/config.ts" ]; then
+    echo "Creating config.ts from config.example.ts..."
+    run_cmd -u stx cp src/config.example.ts src/config.ts
+    echo "REMINDER: Edit $APP_DIR/frontend/src/config.ts if you need custom configuration"
 fi
 
 # Install dependencies
@@ -289,6 +298,18 @@ echo ""
 echo "=========================================="
 echo "Deployment completed!"
 echo "=========================================="
+echo ""
+echo "IMPORTANT: Review and edit configuration files if needed:"
+echo "  Backend:  $BACKEND_DIR/env.sh"
+echo "  Frontend: $APP_DIR/frontend/.env.production"
+if [ -f "$APP_DIR/frontend/src/config.ts" ]; then
+    echo "  Frontend: $APP_DIR/frontend/src/config.ts"
+fi
+echo ""
+echo "After editing, restart services:"
+echo "  sudo systemctl restart stx-node-map-api"
+echo "  sudo systemctl restart stx-node-map-discoverer"
+echo "  sudo systemctl reload nginx"
 echo ""
 echo "Service Status:"
 echo "---------------"
