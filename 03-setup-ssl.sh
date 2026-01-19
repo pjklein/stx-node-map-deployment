@@ -70,11 +70,17 @@ if [ -n "$SERVER_IP" ]; then
 fi
 echo ""
 
-# Check if certbot is installed
+# Check if certbot and Cloudflare plugin are installed
 if ! command -v certbot &> /dev/null; then
-    echo "Installing certbot and Cloudflare plugin..."
+    echo "Installing certbot..."
     apt-get update
-    apt-get install -y certbot python3-certbot-dns-cloudflare
+    apt-get install -y certbot
+fi
+
+# Always ensure Cloudflare DNS plugin is installed
+if ! dpkg -l | grep -q python3-certbot-dns-cloudflare; then
+    echo "Installing Cloudflare DNS plugin for certbot..."
+    apt-get install -y python3-certbot-dns-cloudflare
 fi
 
 # Create Cloudflare credentials file for certbot
