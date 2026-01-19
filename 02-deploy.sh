@@ -250,20 +250,29 @@ run_cmd chown -R www-data:www-data "$WEB_DIR"
 # Install systemd services
 echo ""
 echo "Step 4: Installing systemd services..."
-run_cmd cp "$APP_DIR/../deployment/stx-node-map-api.service" /etc/systemd/system/ 2>/dev/null || \
-    run_cmd cp /opt/stx-node-map/deployment/stx-node-map-api.service /etc/systemd/system/ 2>/dev/null || \
-    echo "Warning: Could not find systemd service file. Please copy manually."
+if [ -f "$SCRIPT_DIR/stx-node-map-api.service" ]; then
+    run_cmd cp "$SCRIPT_DIR/stx-node-map-api.service" /etc/systemd/system/
+    echo "✓ Installed stx-node-map-api.service"
+else
+    echo "Warning: Could not find stx-node-map-api.service in $SCRIPT_DIR"
+fi
 
-run_cmd cp "$APP_DIR/../deployment/stx-node-map-discoverer.service" /etc/systemd/system/ 2>/dev/null || \
-    run_cmd cp /opt/stx-node-map/deployment/stx-node-map-discoverer.service /etc/systemd/system/ 2>/dev/null || \
-    echo "Warning: Could not find discoverer service file."
+if [ -f "$SCRIPT_DIR/stx-node-map-discoverer.service" ]; then
+    run_cmd cp "$SCRIPT_DIR/stx-node-map-discoverer.service" /etc/systemd/system/
+    echo "✓ Installed stx-node-map-discoverer.service"
+else
+    echo "Warning: Could not find stx-node-map-discoverer.service in $SCRIPT_DIR"
+fi
 
 # Install nginx configuration
 echo ""
 echo "Step 5: Installing nginx configuration..."
-run_cmd cp "$APP_DIR/../deployment/nginx-stx-node-map.conf" /etc/nginx/sites-available/stx-node-map 2>/dev/null || \
-    run_cmd cp /opt/stx-node-map/deployment/nginx-stx-node-map.conf /etc/nginx/sites-available/stx-node-map 2>/dev/null || \
-    echo "Warning: Could not find nginx config file."
+if [ -f "$SCRIPT_DIR/nginx-stx-node-map.conf" ]; then
+    run_cmd cp "$SCRIPT_DIR/nginx-stx-node-map.conf" /etc/nginx/sites-available/stx-node-map
+    echo "✓ Installed nginx configuration"
+else
+    echo "Warning: Could not find nginx-stx-node-map.conf in $SCRIPT_DIR"
+fi
 
 # Enable nginx site
 if [ -f /etc/nginx/sites-available/stx-node-map ]; then
