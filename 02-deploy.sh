@@ -147,12 +147,6 @@ echo "Installing Python dependencies..."
 run_cmd -u stx .venv/bin/pip install --upgrade pip
 run_cmd -u stx .venv/bin/pip install -r requirements.txt
 
-# Install the backend package in editable mode
-if [ -f "setup.py" ] || [ -f "pyproject.toml" ]; then
-    echo "Installing backend package..."
-    run_cmd -u stx .venv/bin/pip install -e .
-fi
-
 # Create env file if it doesn't exist
 if [ ! -f "env.sh" ]; then
     echo "Creating env.sh..."

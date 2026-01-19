@@ -9,7 +9,7 @@ Group=stx
 WorkingDirectory=/opt/stx-node-map/backend
 EnvironmentFile=-/opt/stx-node-map/backend/env.sh
 Environment="PATH=/opt/stx-node-map/backend/.venv/bin"
-Environment="PYTHONPATH=/opt/stx-node-map/backend"
+Environment="PYTHONPATH=/opt/stx-node-map/backend/src"
 Environment="NETWORK=mainnet"
 Environment="PYTHONUNBUFFERED=1"
 
