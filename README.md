@@ -53,7 +53,7 @@ Automated deployment scripts and configuration for deploying the STX Node Map ap
 
 - `create-hetzner-server.py` - Python script to create Hetzner server via API
 - `hetzner-config.env.example` - Configuration template
-- `backend-.env.production.example` - Backend environment variables template
+- `backend-.env.production.example` - Backend environment variables template  
 - `frontend-.env.production.example` - Frontend environment variables template
 - `01-server-setup.sh` - Initial server setup (packages, users, firewall)
 - `02-deploy.sh` - Application deployment script
@@ -61,6 +61,8 @@ Automated deployment scripts and configuration for deploying the STX Node Map ap
 - `nginx-stx-node-map.conf` - Nginx configuration
 - `stx-node-map-api.service` - Systemd service for API (Gunicorn)
 - `stx-node-map-discoverer.service` - Systemd service for node discoverer
+
+Note: Additional .example files (env.sh.example, config.example.ts) are in the monorepo.
 
 ## 📚 Documentation
 

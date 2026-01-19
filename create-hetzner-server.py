@@ -298,9 +298,9 @@ Access:
 Next Steps:
 ==========================================
 
-IMPORTANT: Before starting, ensure you have copied example files:
-  - hetzner-config.env.example → hetzner-config.env (configured)
-  - Any other .example files in backend/frontend if needed
+IMPORTANT: Before starting, ensure configuration files are ready:
+  - hetzner-config.env (copy from hetzner-config.env.example and configure)
+  - Monorepo files will be cloned from GitHub (includes .example files)
 
 1. SSH into the server as root (initial access only):
    ssh root@{ipv4}
