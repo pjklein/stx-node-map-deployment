@@ -59,36 +59,24 @@ cd /tmp/deployment
 sudo ./02-deploy.sh
 ```
 
-### 6. Configure DNS
-
-Point your domain's A record to the server IP:
-
-```text
-your-domain.com → <SERVER_IP>
-```
-
-Wait 5-30 minutes for DNS propagation.
-
-### 7. Setup SSL Certificate
+### 6. Setup SSL Certificate
 
 ```bash
 # From server as pjklein with sudo:
-sudo ./03-setup-ssl.sh <SERVER_IP>
-```
-
-```bash
-# From the deployment directory on your local machine (or the server):
 sudo ./03-setup-ssl.sh
 ```
 
-This will:
+This will automatically:
 
-- ✅ Get a Let's Encrypt wildcard certificate
-- ✅ Configure Nginx to use it
+- ✅ Update Cloudflare DNS A record (points your domain to server IP)
+- ✅ Get a Let's Encrypt wildcard certificate via Cloudflare DNS validation
+- ✅ Configure Nginx to use the certificate
 - ✅ Setup auto-renewal
-- ✅ Redirect HTTP → HTTPS
+- ✅ Enable HTTPS-only (redirect HTTP → HTTPS)
 
-### 6. Access Your Application
+Note: Wait 5-15 minutes for DNS propagation after the A record is created.
+
+### 7. Access Your Application
 
 - Web: `https://your-domain.com`
 - API: `https://your-domain.com/api/nodes`
