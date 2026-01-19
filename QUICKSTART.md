@@ -75,6 +75,8 @@ Wait 5-30 minutes for DNS propagation.
 # From server as pjklein with sudo:
 sudo ./03-setup-ssl.sh <SERVER_IP>
 ```
+
+```bash
 # From the deployment directory on your local machine (or the server):
 sudo ./03-setup-ssl.sh
 ```
