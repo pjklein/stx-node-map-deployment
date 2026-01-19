@@ -134,6 +134,12 @@ if [ ! -f "requirements.txt" ]; then
     exit 1
 fi
 
+# Copy backend .env.production.example if it doesn't exist in backend
+if [ ! -f ".env.production.example" ] && [ -f "$SCRIPT_DIR/backend-.env.production.example" ]; then
+    echo "Copying backend .env.production.example..."
+    run_cmd -u stx cp "$SCRIPT_DIR/backend-.env.production.example" .env.production.example
+fi
+
 # Create virtual environment
 if [ ! -d ".venv" ]; then
     echo "Creating Python virtual environment..."
@@ -182,6 +188,12 @@ fi
 echo ""
 echo "Step 3: Setting up frontend..."
 cd "$APP_DIR/frontend"
+
+# Copy frontend .env.production.example if it doesn't exist in frontend
+if [ ! -f ".env.production.example" ] && [ -f "$SCRIPT_DIR/frontend-.env.production.example" ]; then
+    echo "Copying frontend .env.production.example..."
+    run_cmd -u stx cp "$SCRIPT_DIR/frontend-.env.production.example" .env.production.example
+fi
 
 # Create production .env file
 if [ ! -f ".env.production" ]; then
